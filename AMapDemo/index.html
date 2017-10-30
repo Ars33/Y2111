@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+<script src="http://webapi.amap.com/maps?v=1.4.0&amp;key=48f80c50fdfca9901016d5bbb72065e2&callback=init"></script>
+<style type="text/css">
+*{
+	marhin:0px auto;
+	padding: 0px;
+}
+#container{
+	width: 1024px;
+	height: 400px;
+	border: 1px solid #efefef;
+}
+#result{
+	width: 300px;
+	height:500px;
+	position: relative;
+	top: -400px;
+	right: -950px;
+}
+</style>
+</head>
+<body>
+<div id="container"></div>
+<div id="result"></div>
+<div id="walking"></div>
+</body>
+<script type="text/javascript">
+	function init(){
+		/*创建地图对象*/
+		var map =new AMap.Map('container',{
+			zoom:20,
+			center:[116.262289,40.13729],
+			});
+		/*创建点覆盖物*/
+		var marker=new AMap.Marker({
+			position:[116.262289,40.13729],
+			
+			icon:new AMap.Icon({
+				size:new AMap.Size(36,36),
+				image:"http://img.zcool.cn/community/01c9505541bb22000001a64b457752.jpg",
+				imageSize:new AMap.Size(36,36)
+			}),
+			draggable:true,
+			title:"JYPE"
+			});
+		 	/*将覆盖物添加到地图上*/
+	 		marker.setMap(map);
+
+	 		/*创建弹层*/
+	 		var prompt=new AMap.InfoWindow({
+			autoMove:true,
+			closeWhenClickMap:true,
+			content:"这个是我们的测试弹层，有点low!",
+			size:new AMap.Size(200,100),
+			position:[116.262289,40.13729],
+			showShadow:true
+		 	});
+			/*覆盖物添加点击事件*/
+			marker.on('click',function(){
+				/*显示弹层*/
+			 	prompt.open(map,map.getCenter());
+				});
+			/*使用插件获取其他服务*/
+			AMap.plugin('AMap.PlaceSearch',function(){
+				/**/
+			var search=new AMap.PlaceSearch({
+				pageSize:5,
+				pageIndex:2,
+				city:"北京",
+				map:map,
+				panel:"result"
+				});
+			search.search('北大青鸟',function(status,result){
+				$.each(result,function(i,doc){
+				console.info(doc);
+					});
+				});
+				});
+			
+			AMap.service('AMap.Walking',function(){
+				walking=new AMap.Walking({
+					city:'北京市',
+					map:map,
+					panel:"walking"
+					});
+				walking.search([{
+					city:"北京",
+					keyword:"北京科技职业学院"
+					},
+					{
+					city:"北京",
+					keyword:"沙河万家灯火"
+					}]);
+				});
+		}
+</script>
+</html>
